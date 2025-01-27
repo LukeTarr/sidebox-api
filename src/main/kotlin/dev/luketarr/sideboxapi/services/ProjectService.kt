@@ -4,6 +4,7 @@ import dev.luketarr.sideboxapi.db.models.Project
 import dev.luketarr.sideboxapi.db.repository.ProjectRepository
 import dev.luketarr.sideboxapi.db.repository.TopicRepository
 import dev.luketarr.sideboxapi.db.repository.AppUserRepository
+import dev.luketarr.sideboxapi.dtos.CreateProjectResponseDTO
 import dev.luketarr.sideboxapi.dtos.GetProjectResponseDTO
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -30,7 +31,7 @@ class ProjectService(
             this.updatedOn = project.updatedOn.toString()
         })
     }
-    fun createProject(name: String, description: String, userId: Long): ResponseEntity<Project> {
+    fun createProject(name: String, description: String, userId: Long): ResponseEntity<CreateProjectResponseDTO> {
         // TODO: This user code needs to be refactored to use the security context
         val user = appUserRepository.findById(userId)
             .orElse(null)
@@ -43,6 +44,6 @@ class ProjectService(
                 this.appUser = user
             }
         )
-        return ResponseEntity.ok(project)
+        return ResponseEntity.ok(CreateProjectResponseDTO(project.id))
     }
 }

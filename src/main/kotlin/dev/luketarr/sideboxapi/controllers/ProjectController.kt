@@ -1,7 +1,7 @@
 package dev.luketarr.sideboxapi.controllers
 
 import dev.luketarr.sideboxapi.db.models.Project
-import dev.luketarr.sideboxapi.dtos.CreateProjectRequestDTO
+import dev.luketarr.sideboxapi.dtos.CreateProjectResponseDTO
 import dev.luketarr.sideboxapi.dtos.GetProjectResponseDTO
 import dev.luketarr.sideboxapi.services.ProjectService
 import io.swagger.v3.oas.annotations.tags.Tag
@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import dev.luketarr.sideboxapi.dtos.CreateProjectRequestDTO as CreateProjectRequestDTO1
 
 @RestController
 @RequestMapping("/api")
@@ -29,7 +30,7 @@ class ProjectController(
     }
 
     @PostMapping("/project")
-    fun createProject(@RequestBody  body : CreateProjectRequestDTO) : ResponseEntity<Project> {
+    fun createProject(@RequestBody  body : CreateProjectRequestDTO1) : ResponseEntity<CreateProjectResponseDTO> {
         return this.projectService.createProject(body.name, body.description, 1)
     }
 

@@ -7,3 +7,12 @@ data class GetProjectResponseDTO (
     var createdOn: String = "",
     var updatedOn: String = ""
 )
+
+data class CreateProjectRequestDTO(
+    val name: String,
+    val description: String
+)
+
+data class CreateProjectResponseDTO(
+    val id: Long,
+)
