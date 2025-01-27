@@ -1,0 +1,17 @@
+services:
+  postgres:
+    container_name: postgres_container
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: mypassword
+      PGDATA: /data/postgres
+    volumes:
+       - postgres:/data/postgres-sidebox-api
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+    network_mode: bridge
+
+volumes:
+  postgres:
