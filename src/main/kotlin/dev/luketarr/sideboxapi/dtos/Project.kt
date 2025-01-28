@@ -16,3 +16,8 @@ data class CreateProjectRequestDTO(
 data class CreateProjectResponseDTO(
     val id: Long,
 )
+
+data class UpdateProjectRequestDTO(
+    val name: String?,
+    val description: String?
+)

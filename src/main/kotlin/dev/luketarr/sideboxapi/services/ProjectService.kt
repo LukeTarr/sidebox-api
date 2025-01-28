@@ -6,6 +6,7 @@ import dev.luketarr.sideboxapi.db.repository.TopicRepository
 import dev.luketarr.sideboxapi.db.repository.AppUserRepository
 import dev.luketarr.sideboxapi.dtos.CreateProjectResponseDTO
 import dev.luketarr.sideboxapi.dtos.GetProjectResponseDTO
+import java.time.LocalDateTime
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
@@ -45,5 +46,37 @@ class ProjectService(
             }
         )
         return ResponseEntity.ok(CreateProjectResponseDTO(project.id))
+    }
+
+    fun updateProject(id: Long, userId: Long, name: String?, description: String?): ResponseEntity<CreateProjectResponseDTO> {
+        val project = projectRepository.findById(id)
+            .orElse(null)
+            ?: return ResponseEntity.status(HttpStatus.NOT_FOUND).build()
+
+        if (project.appUser.id != userId) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
+        }
+
+        project.name = name ?: project.name
+        project.description = description ?: project.description
+        project.updatedOn = LocalDateTime.now()
+
+        val updatedProject = projectRepository.save(project)
+
+        return ResponseEntity.ok(CreateProjectResponseDTO(updatedProject.id))
+    }
+
+    fun deleteProject(id: Long, userId: Long): ResponseEntity<Unit> {
+        val project = projectRepository.findById(id)
+            .orElse(null)
+            ?: return ResponseEntity.status(HttpStatus.NOT_FOUND).build()
+
+        if (project.appUser.id != userId) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
+        }
+
+        projectRepository.delete(project)
+
+        return ResponseEntity.ok().build()
     }
 }
