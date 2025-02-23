@@ -19,11 +19,11 @@ CREATE TABLE project (
     description TEXT,
     created_on TIMESTAMPTZ NOT NULL,
     updated_on TIMESTAMPTZ NOT NULL,
-    user_id BIGINT NOT NULL,
+    app_user_id BIGINT NOT NULL,
     PRIMARY KEY (id),
-    CONSTRAINT fk_project_user
-        FOREIGN KEY (user_id)
-        REFERENCES "user"(id)
+    CONSTRAINT fk_project_app_user
+        FOREIGN KEY (app_user_id)
+        REFERENCES app_user(id)
         ON DELETE CASCADE
 );
 
@@ -53,6 +53,6 @@ CREATE TABLE project_topic (
 -- Create indexes for better query performance
 -- PostgreSQL automatically creates indexes for primary keys and unique constraints
 -- so we only need the additional indexes for foreign keys
-CREATE INDEX idx_project_user ON project(user_id);
+CREATE INDEX idx_project_app_user ON project(app_user_id);
 CREATE INDEX idx_project_topic_project ON project_topic(project_id);
 CREATE INDEX idx_project_topic_topic ON project_topic(topic_id);

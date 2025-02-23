@@ -32,23 +32,32 @@ class ProjectController(
     }
 
     @PostMapping("/project")
-    fun createProject(@RequestBody  body : CreateProjectRequestDTO) : ResponseEntity<CreateProjectResponseDTO> {
-        return this.projectService.createProject(body.name, body.description, developmentUserID)
+    fun createProject(@RequestBody body : CreateProjectRequestDTO) : ResponseEntity<CreateProjectResponseDTO> {
+        return ResponseEntity.ok(this.projectService.createProject(body.name, body.description, developmentUserID))
     }
 
     @GetMapping("/project/{id}")
     fun getProjects(@PathVariable id: String) : ResponseEntity<GetProjectResponseDTO> {
-        return this.projectService.getProject(id.toLong())
+        return ResponseEntity.ok(this.projectService.getProject(id.toLong()))
     }
 
     @DeleteMapping("/project/{id}")
     fun deleteProject(@PathVariable id: String) : ResponseEntity<Unit> {
-        return this.projectService.deleteProject(id.toLong(), developmentUserID)
+        return ResponseEntity.ok(this.projectService.deleteProject(id.toLong(), developmentUserID))
     }
 
     @PutMapping("/project/{id}")
     fun updateProject(@PathVariable id: String, @RequestBody body: UpdateProjectRequestDTO) : ResponseEntity<CreateProjectResponseDTO> {
-        return this.projectService.updateProject(id.toLong(), developmentUserID, body.name, body.description)
+        return ResponseEntity.ok(
+            this.projectService.updateProject(id.toLong(), developmentUserID, body.name, body.description)
+        )
+    }
+
+    @GetMapping("/project/test")
+    fun test() : ResponseEntity<Unit> {
+        return ResponseEntity.ok(
+            this.projectService.errorTest()
+        )
     }
 
 }

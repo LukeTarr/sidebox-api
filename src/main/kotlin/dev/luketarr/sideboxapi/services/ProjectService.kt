@@ -6,9 +6,9 @@ import dev.luketarr.sideboxapi.db.repository.TopicRepository
 import dev.luketarr.sideboxapi.db.repository.AppUserRepository
 import dev.luketarr.sideboxapi.dtos.CreateProjectResponseDTO
 import dev.luketarr.sideboxapi.dtos.GetProjectResponseDTO
+import dev.luketarr.sideboxapi.dtos.ResourceNotFoundException
+import dev.luketarr.sideboxapi.dtos.UnauthorizedException
 import java.time.LocalDateTime
-import org.springframework.http.HttpStatus
-import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 
 @Service
@@ -18,25 +18,26 @@ class ProjectService(
     private val topicRepository: TopicRepository
 ) {
 
-    fun getProject(id: Long): ResponseEntity<GetProjectResponseDTO> {
+    fun getProject(id: Long): GetProjectResponseDTO {
         val project = projectRepository.findById(id)
             .orElse(null)
-            ?: return ResponseEntity.status(HttpStatus.NOT_FOUND).build()
+            ?: throw ResourceNotFoundException("Project not found")
 
 
-        return ResponseEntity.ok(GetProjectResponseDTO().apply {
-            this.id = project.id
-            this.name = project.name
-            this.description = project.description
-            this.createdOn = project.createdOn.toString()
-            this.updatedOn = project.updatedOn.toString()
-        })
+        return GetProjectResponseDTO(
+            id,
+            project.name,
+            project.description,
+            project.createdOn.toString(),
+            project.updatedOn.toString(),
+
+        )
     }
-    fun createProject(name: String, description: String, userId: Long): ResponseEntity<CreateProjectResponseDTO> {
+    fun createProject(name: String, description: String, userId: Long): CreateProjectResponseDTO {
         // TODO: This user code needs to be refactored to use the security context
         val user = appUserRepository.findById(userId)
             .orElse(null)
-            ?: return ResponseEntity.status(HttpStatus.NOT_FOUND).build()
+            ?: throw UnauthorizedException("User not found")
 
         val project = projectRepository.save(
             Project().apply {
@@ -45,16 +46,16 @@ class ProjectService(
                 this.appUser = user
             }
         )
-        return ResponseEntity.ok(CreateProjectResponseDTO(project.id))
+        return CreateProjectResponseDTO(project.id)
     }
 
-    fun updateProject(id: Long, userId: Long, name: String?, description: String?): ResponseEntity<CreateProjectResponseDTO> {
+    fun updateProject(id: Long, userId: Long, name: String?, description: String?): CreateProjectResponseDTO {
         val project = projectRepository.findById(id)
             .orElse(null)
-            ?: return ResponseEntity.status(HttpStatus.NOT_FOUND).build()
+            ?: throw ResourceNotFoundException("Project not found")
 
         if (project.appUser.id != userId) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
+            throw UnauthorizedException("User not authorized")
         }
 
         project.name = name ?: project.name
@@ -63,20 +64,22 @@ class ProjectService(
 
         val updatedProject = projectRepository.save(project)
 
-        return ResponseEntity.ok(CreateProjectResponseDTO(updatedProject.id))
+        return CreateProjectResponseDTO(updatedProject.id)
     }
 
-    fun deleteProject(id: Long, userId: Long): ResponseEntity<Unit> {
+    fun deleteProject(id: Long, userId: Long) {
         val project = projectRepository.findById(id)
             .orElse(null)
-            ?: return ResponseEntity.status(HttpStatus.NOT_FOUND).build()
+            ?: throw ResourceNotFoundException("Project not found")
 
         if (project.appUser.id != userId) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
+            throw UnauthorizedException("User not authorized")
         }
 
         projectRepository.delete(project)
+    }
 
-        return ResponseEntity.ok().build()
+    fun errorTest(){
+        throw ResourceNotFoundException("This is a test")
     }
 }
